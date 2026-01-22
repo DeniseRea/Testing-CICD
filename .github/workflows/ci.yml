@@ -1,0 +1,60 @@
+# Workflow de CI/CD para el Laboratorio de Pruebas de Software
+# Autor: Denise
+# Descripción: Pipeline automatizado para pruebas y análisis de código
+
+name: CI - Integración Continua
+
+# Triggers: Ejecutar el workflow en push y pull requests a main
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# Definición de trabajos
+jobs:
+  # Job principal: test
+  test:
+    name: Pruebas y Análisis de Código
+    runs-on: ubuntu-latest
+
+    # Estrategia de matriz para probar múltiples versiones de Node (opcional)
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      # Step 1: Checkout del código fuente
+      - name: 📥 Checkout del repositorio
+        uses: actions/checkout@v4
+
+      # Step 2: Configurar Node.js
+      - name: 🔧 Configurar Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # Step 3: Instalar dependencias
+      - name: 📦 Instalar dependencias
+        run: npm ci
+
+      # Step 4: Ejecutar ESLint
+      - name: 🔍 Análisis estático con ESLint
+        run: npm run lint
+
+      # Step 5: Ejecutar pruebas con Jest
+      - name: 🧪 Ejecutar pruebas unitarias
+        run: npm test
+
+      # Step 6: Simulación de despliegue
+      - name: 🚀 Simulación de despliegue
+        run: |
+          echo "✓ Todas las pruebas pasaron exitosamente"
+          echo "✓ Código validado por ESLint"
+          echo "✓ Listo para despliegue"
+          echo "================================================"
+          echo "Autor: Denise"
+          echo "Fecha: $(date)"
+          echo "Commit: ${{ github.sha }}"
+          echo "================================================"
