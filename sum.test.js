@@ -6,11 +6,11 @@ import { sum } from './sum.js';
 
 describe('Función sum()', () => {
   test('suma 1 + 2 es igual a 3', () => {
-    expect(sum(1, 9)).toBe(3);
+    expect(sum(1, 2)).toBe(3);
   });
 
   test('suma números negativos: -1 + -1 es igual a -2', () => {
-    expect(sum(-1, 1)).toBe(-2);
+    expect(sum(-1, -1)).toBe(-2);
   });
 
   test('suma con cero: 5 + 0 es igual a 5', () => {
