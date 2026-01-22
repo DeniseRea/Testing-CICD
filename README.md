@@ -1,17 +1,220 @@
-# Laboratorio CI/CD con GitHub Actions 🚀
+# Guía de Comandos Git - Laboratorio CI/CD
 
-## 📝 Descripción del Proyecto
+## Configuración Inicial del Repositorio
 
-Laboratorio de integración continua (CI) y despliegue continuo (CD) utilizando GitHub Actions. Este proyecto implementa un servidor Express simple con pruebas automatizadas usando Jest y análisis de código estático con ESLint.
+### Paso 1: Instalar dependencias
+```bash
+npm install
+```
 
-**Asignatura**: Pruebas de Software  
-**Nivel**: 6to  
-**Autor**: Denise  
-**Fecha**: Enero 2026
+### Paso 2: Inicializar repositorio Git local
+```bash
+git init
+```
+
+### Paso 3: Agregar todos los archivos al staging area
+```bash
+git add .
+```
+
+### Paso 4: Hacer el primer commit
+```bash
+git commit -m "Proyecto base con CI"
+```
+
+### Paso 5: Renombrar la rama a main
+```bash
+git branch -M main
+```
+
+### Paso 6: Conectar con el repositorio remoto
+**Nota**: Reemplaza `TU_USUARIO` y `nombreRepositorio` con tus datos reales
+
+```bash
+git remote add origin https://github.com/TU_USUARIO/nombreRepositorio.git
+```
+
+### Paso 7: Subir cambios al repositorio remoto
+```bash
+git push -u origin main
+```
 
 ---
 
-## 📁 Estructura del Proyecto
+## Flujo de Trabajo para Actualizaciones
+
+### Cuando hagas cambios en el código:
+
+1. **Ver el estado de los archivos**
+   ```bash
+   git status
+   ```
+
+2. **Agregar archivos modificados**
+   ```bash
+   git add .
+   ```
+   O agregar archivos específicos:
+   ```bash
+   git add nombre-archivo.js
+   ```
+
+3. **Hacer commit con mensaje descriptivo**
+   ```bash
+   git commit -m "Descripción clara del cambio realizado"
+   ```
+
+4. **Subir cambios al repositorio**
+   ```bash
+   git push
+   ```
+
+---
+
+## Antes de Hacer Push - Verificaciones Locales
+
+### Ejecutar pruebas localmente
+```bash
+npm test
+```
+
+### Ejecutar ESLint
+```bash
+npm run lint
+```
+
+### Iniciar el servidor (para pruebas manuales)
+```bash
+npm start
+```
+
+---
+
+## Comandos Útiles de Git
+
+### Ver historial de commits
+```bash
+git log --oneline
+```
+
+### Ver diferencias antes de commit
+```bash
+git diff
+```
+
+### Deshacer cambios no confirmados
+```bash
+git checkout -- nombre-archivo.js
+```
+
+### Ver ramas disponibles
+```bash
+git branch
+```
+
+### Crear una nueva rama
+```bash
+git checkout -b nombre-nueva-rama
+```
+
+---
+
+## Para Provocar Error Intencional (Actividad del Lab)
+
+### 1. Modificar sum.js para que falle
+Cambiar la función sum para que retorne un resultado incorrecto:
+```javascript
+export function sum(a, b) {
+  return a + b + 1; // Error intencional
+}
+```
+
+### 2. Hacer commit y push
+```bash
+git add sum.js
+git commit -m "Test: Provocar error intencional en función sum"
+git push
+```
+
+### 3. Verificar en GitHub Actions
+- Ir a la pestaña "Actions" en GitHub
+- Observar que el workflow falla
+- **TOMAR CAPTURA DE PANTALLA**
+
+### 4. Corregir el error
+Restaurar sum.js a su estado correcto:
+```javascript
+export function sum(a, b) {
+  return a + b;
+}
+```
+
+### 5. Hacer commit de corrección y push
+```bash
+git add sum.js
+git commit -m "Fix: Corregir función sum"
+git push
+```
+
+### 6. Verificar corrección en GitHub Actions
+- Ir nuevamente a "Actions"
+- Observar que el workflow pasa
+- **TOMAR CAPTURA DE PANTALLA**
+
+---
+
+## Verificar GitHub Actions
+
+1. Ve a tu repositorio en GitHub
+2. Haz clic en la pestaña **"Actions"**
+3. Verás la lista de workflows ejecutados
+4. Haz clic en cualquier ejecución para ver los detalles
+5. Revisa cada step del job:
+   - Checkout del repositorio
+   - Configurar Node.js
+   - Instalar dependencias
+   - Análisis estático con ESLint
+   - Ejecutar pruebas unitarias
+   - Simulación de despliegue
+
+---
+
+## Resumen de Comandos Esenciales
+
+```bash
+# Configuración inicial
+git init
+git add .
+git commit -m "Proyecto base con CI"
+git branch -M main
+git remote add origin https://github.com/TU_USUARIO/nombreRepositorio.git
+git push -u origin main
+
+# Flujo normal de trabajo
+git status
+git add .
+git commit -m "mensaje descriptivo"
+git push
+
+# Verificaciones locales
+npm test
+npm run lint
+npm start
+```
+
+---
+
+## Checklist de Verificación
+
+- [ ] Repositorio creado en GitHub
+- [ ] Dependencias instaladas localmente (`npm install`)
+- [ ] Pruebas locales ejecutadas exitosamente (`npm test`)
+- [ ] ESLint sin errores (`npm run lint`)
+- [ ] Primer push realizado
+- [ ] Workflow de GitHub Actions ejecutándose
+- [ ] Todos los steps del workflow en verde
+- [ ] Error intencional probado y documentado
+- [ ] Corrección realizada y verificada
 
 ```
 labortatorio/
@@ -27,23 +230,23 @@ labortatorio/
 ├── math.js                    # Funciones matemáticas (factorial, fibonacci)
 ├── math.test.js               # Pruebas para math.js
 ├── package.json               # Configuración del proyecto y dependencias
-├── COMANDOS_GIT.md           # Guía de comandos Git
-└── README.md                 # Este archivo
+└── README.md                  # Este archivo
 ```
 
 ---
 
-## 🎯 Objetivos del Laboratorio
+## Descripción del Proyecto
 
-✅ Configurar un flujo de CI en GitHub Actions  
-✅ Implementar pruebas unitarias con Jest  
-✅ Aplicar análisis estático de código con ESLint  
-✅ Simular un proceso de despliegue automatizado  
-✅ Comprender el ciclo de vida de CI/CD
+Laboratorio de integración continua (CI) y despliegue continuo (CD) utilizando GitHub Actions. Este proyecto implementa un servidor Express simple con pruebas automatizadas usando Jest y análisis de código estático con ESLint.
+
+**Asignatura**: Pruebas de Software  
+**Nivel**: 6to  
+**Autor**: Denise  
+**Fecha**: Enero 2026
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **Node.js**: Entorno de ejecución de JavaScript
 - **Express**: Framework web para Node.js
@@ -53,209 +256,15 @@ labortatorio/
 
 ---
 
-## 📦 Instalación
-
-### Prerrequisitos
+## Prerrequisitos
 
 - Node.js v14 o superior
 - npm (incluido con Node.js)
 - Cuenta de GitHub
 - Git instalado
 
-### Pasos de Instalación
-
-1. **Clonar el repositorio**
-   ```bash
-   git clone https://github.com/TU_USUARIO/nombreRepositorio.git
-   cd nombreRepositorio
-   ```
-
-2. **Instalar dependencias**
-   ```bash
-   npm install
-   ```
-
 ---
 
-## 🚀 Uso
-
-### Iniciar el servidor
-```bash
-npm start
-```
-El servidor se ejecutará en `http://localhost:3000`
-
-### Endpoints disponibles
-
-- **GET /** - Mensaje de bienvenida
-  ```json
-  {
-    "mensaje": "Bienvenido al laboratorio de CI/CD con GitHub Actions",
-    "autor": "Denise",
-    "fecha": "2026-01-22T..."
-  }
-  ```
-
-- **GET /health** - Estado del servidor
-  ```json
-  {
-    "status": "OK",
-    "timestamp": 1737504000000
-  }
-  ```
-
-### Ejecutar pruebas
-```bash
-npm test
-```
-
-### Ejecutar análisis de código
-```bash
-npm run lint
-```
-
----
-
-## 🧪 Pruebas Implementadas
-
-### sum.test.js
-- ✅ Suma de números positivos
-- ✅ Suma de números negativos
-- ✅ Suma con cero
-- ✅ Suma de números decimales
-
-### math.test.js
-- ✅ Factorial de 0, 1, 5, 10
-- ✅ Manejo de errores para números negativos
-- ✅ Fibonacci de 0, 1, 2, 5, 10, 15
-- ✅ Validación de entradas incorrectas
-
----
-
-## 🔄 Workflow de GitHub Actions
-
-El workflow se activa automáticamente en:
-- **Push** a la rama `main`
-- **Pull requests** hacia la rama `main`
-
-### Steps del Workflow
-
-1. 📥 Checkout del repositorio
-2. 🔧 Configuración de Node.js v18
-3. 📦 Instalación de dependencias
-4. 🔍 Análisis estático con ESLint
-5. 🧪 Ejecución de pruebas unitarias
-6. 🚀 Simulación de despliegue
-
----
-
-## 📊 Actividades Complementarias
-
-### 1. Funciones Adicionales Implementadas
-
-- **factorial(n)**: Calcula el factorial de un número
-- **fibonacci(n)**: Calcula el número de Fibonacci en la posición n
-
-### 2. Error Intencional (Documentado)
-
-Para demostrar el funcionamiento del CI:
-
-**Provocar error**:
-- Modificar `sum.js` para que retorne un valor incorrecto
-- Hacer commit y push
-- Verificar que GitHub Actions detecta el fallo ❌
-
-**Corregir error**:
-- Restaurar `sum.js` a su estado correcto
-- Hacer commit y push
-- Verificar que GitHub Actions pasa exitosamente ✅
-
-Ver capturas en el informe de laboratorio.
-
----
-
-## 📸 Capturas Requeridas
-
-1. ✅ Estructura de archivos del proyecto
-2. ✅ Ejecución local de `npm test`
-3. ✅ Ejecución local de `npm run lint`
-4. ✅ Repositorio en GitHub
-5. ✅ Workflow exitoso (inicial)
-6. ✅ Workflow fallido (error intencional)
-7. ✅ Workflow exitoso (después de corrección)
-8. ✅ Detalle de steps en Actions
-
----
-
-## 📝 Comandos Git Útiles
-
-Ver la guía completa en [COMANDOS_GIT.md](COMANDOS_GIT.md)
-
-```bash
-# Configuración inicial
-git init
-git add .
-git commit -m "Proyecto base con CI"
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/nombreRepositorio.git
-git push -u origin main
-
-# Actualizaciones
-git add .
-git commit -m "mensaje descriptivo"
-git push
-```
-
----
-
-## ✅ Resultados Esperados
-
-- ✅ Servidor Express funcionando correctamente
-- ✅ Todas las pruebas unitarias pasando (12+ tests)
-- ✅ ESLint sin errores ni advertencias
-- ✅ Workflow de GitHub Actions ejecutándose automáticamente
-- ✅ Pipeline de CI completamente funcional
-
----
-
-## 📚 Conclusiones
-
-1. **Automatización**: GitHub Actions permite automatizar completamente el proceso de testing y validación de código, reduciendo errores humanos y acelerando el desarrollo.
-
-2. **Detección Temprana**: La integración continua detecta errores inmediatamente después de cada push, lo que facilita la identificación y corrección rápida de problemas.
-
----
-
-## 💡 Recomendaciones
-
-1. **Commits Frecuentes**: Realizar commits pequeños y frecuentes facilita la identificación de errores y mejora el historial del proyecto.
-
-2. **Pruebas Completas**: Mantener una cobertura de pruebas alta garantiza la calidad del código y reduce bugs en producción.
-
----
-
-## 👥 Autor
-
-**Denise**  
-Ingeniería de Software - 6to Nivel  
-Universidad Pontificia Universidad Católica del Ecuador  
-Sede Santo Domingo
-
----
-
-## 📄 Licencia
-
-ISC License - Este proyecto es parte de un laboratorio académico.
-
----
-
-## 🔗 Enlaces Útiles
-
-- [Documentación de GitHub Actions](https://docs.github.com/en/actions)
-- [Documentación de Jest](https://jestjs.io/)
-- [Documentación de ESLint](https://eslint.org/)
-- [Documentación de Express](https://expressjs.com/)
-
----
-
-**Última actualización**: Enero 2026
+**Autor**: Deni  
+**Laboratorio**: CI/CD usando GitHub Actions  
+**Fecha**: Enero 2026

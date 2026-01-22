@@ -1,0 +1,917 @@
+%=============================================
+% INFORME DE LABORATORIO - PRÁCTICA N° 6
+% CI/CD usando GitHub Actions
+% Universidad de las Fuerzas Armadas ESPE - Matriz
+%=============================================
+
+\documentclass[12pt,a4paper]{article}
+
+%--- Paquetes esenciales ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{parskip}
+\usepackage{setspace}
+
+\tcbuselibrary{listings,skins,breakable}
+
+%--- Configuración de página ---
+\geometry{
+    top=2.5cm,
+    bottom=2.5cm,
+    left=2.5cm,
+    right=2.5cm,
+    headheight=14pt
+}
+
+%--- Definición de colores personalizados ---
+\definecolor{espeGreen}{RGB}{0, 102, 51}
+\definecolor{espeGold}{RGB}{184, 134, 11}
+\definecolor{darkBlue}{RGB}{0, 51, 102}
+\definecolor{lightGray}{RGB}{248, 249, 250}
+
+% Colores para código estilo Atom One Dark
+\definecolor{codeBg}{RGB}{40, 44, 52}
+\definecolor{codeText}{RGB}{171, 178, 191}
+\definecolor{codeKeyword}{RGB}{198, 120, 221}
+\definecolor{codeString}{RGB}{152, 195, 121}
+\definecolor{codeComment}{RGB}{92, 99, 112}
+\definecolor{codeNumber}{RGB}{209, 154, 102}
+\definecolor{codeFunction}{RGB}{97, 175, 239}
+\definecolor{codeBorder}{RGB}{62, 68, 81}
+
+% Colores para resultados
+\definecolor{successGreen}{RGB}{40, 167, 69}
+\definecolor{warningYellow}{RGB}{255, 193, 7}
+\definecolor{dangerRed}{RGB}{220, 53, 69}
+
+%--- Configuración de hipervínculos ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=darkBlue,
+    urlcolor=espeGreen,
+    citecolor=espeGreen,
+    pdftitle={Informe de Laboratorio - CI/CD con GitHub Actions},
+    pdfauthor={Denise Rea}
+}
+
+%--- Configuración de listings para código ---
+\lstdefinestyle{codigo}{
+    backgroundcolor=\color{codeBg},
+    basicstyle=\ttfamily\small\color{codeText},
+    keywordstyle=\color{codeKeyword}\bfseries,
+    stringstyle=\color{codeString},
+    commentstyle=\color{codeComment}\itshape,
+    numberstyle=\tiny\color{codeComment},
+    numbers=left,
+    numbersep=8pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    tabsize=2,
+    showstringspaces=false,
+    frame=single,
+    rulecolor=\color{codeBorder},
+    framesep=5pt,
+    xleftmargin=15pt,
+    xrightmargin=5pt,
+    captionpos=b
+}
+
+\lstdefinestyle{yaml}{
+    style=codigo,
+    morekeywords={name, on, push, pull_request, branches, jobs, runs-on, steps, uses, with, run, strategy, matrix, node-version}
+}
+
+\lstdefinestyle{javascript}{
+    style=codigo,
+    morekeywords={import, export, from, const, let, var, function, return, if, else, for, throw, new, describe, test, expect}
+}
+
+\lstdefinestyle{json}{
+    style=codigo,
+    morekeywords={true, false, null}
+}
+
+%--- Caja para resultados ---
+\newtcolorbox{resultbox}[1][]{
+    enhanced,
+    breakable,
+    colback=lightGray,
+    colframe=successGreen,
+    arc=4pt,
+    boxrule=2pt,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt,
+    fonttitle=\bfseries,
+    title=#1,
+    coltitle=white,
+    attach boxed title to top left={yshift=-2mm, xshift=10pt},
+    boxed title style={colback=successGreen, arc=3pt, boxrule=0pt}
+}
+
+%--- Configuración de encabezados y pies ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{espeGreen}{Universidad de las Fuerzas Armadas ESPE - Matriz}}
+\fancyhead[R]{\small\textcolor{darkBlue}{Pruebas de Software}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+%--- Formato de títulos ---
+\titleformat{\section}
+    {\normalfont\Large\bfseries\color{espeGreen}}
+    {\thesection.}{0.5em}{}
+    [\titlerule]
+
+\titleformat{\subsection}
+    {\normalfont\large\bfseries\color{darkBlue}}
+    {\thesubsection.}{0.5em}{}
+
+\titleformat{\subsubsection}
+    {\normalfont\normalsize\bfseries\color{darkBlue}}
+    {\thesubsubsection.}{0.5em}{}
+
+%=============================================
+% INICIO DEL DOCUMENTO
+%=============================================
+\begin{document}
+
+%--- Portada ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    {\Large\bfseries\textcolor{espeGreen}{UNIVERSIDAD DE LAS FUERZAS ARMADAS ESPE}}\\[0.3cm]
+    {\large\textcolor{darkBlue}{Sede Matriz Sangolquí}}\\[0.2cm]
+    {\normalsize Departamento de Ciencias de la Computación}\\[0.2cm]
+    {\normalsize Carrera de Ingeniería de Software}\\[1.5cm]
+    
+    \rule{\textwidth}{1.5pt}\\[0.4cm]
+    {\Huge\bfseries\textcolor{darkBlue}{INFORME DE LABORATORIO}}\\[0.2cm]
+    {\LARGE\textcolor{espeGreen}{Práctica N° 6}}\\[0.2cm]
+    \rule{\textwidth}{1.5pt}\\[1cm]
+    
+    {\Large\bfseries CI/CD usando GitHub Actions}\\[0.5cm]
+    {\large Integración y Entrega Continua con automatización de pruebas}\\[2cm]
+    
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushleft}
+            {\bfseries\textcolor{espeGreen}{Asignatura:}}\\
+            Pruebas de Software\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{Docente:}}\\
+            Ing. Enrique Calvopiña, Mgtr.\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{NRC:}}\\
+            22431
+        \end{flushleft}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushright}
+            {\bfseries\textcolor{espeGreen}{Estudiante:}}\\
+            Denise Rea\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{Nivel:}}\\
+            6to Semestre\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{Período:}}\\
+            202555
+        \end{flushright}
+    \end{minipage}\\[2cm]
+    
+    {\bfseries\textcolor{espeGreen}{Laboratorio:}} H-205\\[1cm]
+    
+    \vfill
+    {\large Enero 2026}
+\end{titlepage}
+
+%--- Índice ---
+\tableofcontents
+\newpage
+
+%=============================================
+% SECCIÓN 1: INTRODUCCIÓN
+%=============================================
+\section{Introducción}
+
+La Integración Continua (CI) es una práctica fundamental del desarrollo de software moderno que permite a los equipos de desarrollo detectar y corregir errores de manera temprana en el ciclo de vida del software. Este laboratorio tiene como propósito familiarizarse con la automatización de tareas esenciales como la instalación de dependencias, la ejecución de pruebas unitarias y la verificación de calidad del código mediante ESLint, todo ello gestionado a través de \textbf{GitHub Actions}.
+
+A través de una aplicación sencilla en \textbf{Node.js}, se experimentará el poder de los flujos automatizados y se comprenderá la importancia de detectar errores temprano en el ciclo de vida del desarrollo. GitHub Actions permite configurar pipelines de CI/CD directamente en el repositorio, ejecutando automáticamente pruebas y verificaciones con cada cambio en el código.
+
+El flujo de trabajo implementado incluye:
+\begin{itemize}[leftmargin=2cm]
+    \item \textbf{Checkout del código:} Obtención del código fuente del repositorio.
+    \item \textbf{Configuración del entorno:} Instalación de Node.js y dependencias.
+    \item \textbf{Análisis estático:} Verificación de calidad con ESLint.
+    \item \textbf{Pruebas unitarias:} Ejecución de tests con Jest.
+    \item \textbf{Simulación de despliegue:} Preparación para entrega continua.
+\end{itemize}
+
+%=============================================
+% SECCIÓN 2: OBJETIVOS
+%=============================================
+\section{Objetivos}
+
+\subsection{Objetivo General}
+Configurar un flujo de integración continua (CI) en GitHub Actions que se active automáticamente con cada push o pull request a la rama principal del repositorio, implementando pruebas unitarias y análisis estático de código.
+
+\subsection{Objetivos Específicos}
+\begin{enumerate}[leftmargin=2cm]
+    \item Configurar un flujo de integración continua (CI) en GitHub Actions que se active automáticamente con cada push o pull request a la rama principal del repositorio.
+    \item Implementar pruebas unitarias usando Jest, garantizando que la lógica del sistema funcione correctamente en cada actualización del código.
+    \item Aplicar análisis estático de código con ESLint, reforzando buenas prácticas de programación y detección temprana de errores o inconsistencias.
+    \item Simular un proceso de despliegue automatizado, demostrando cómo se automatizan las etapas previas al paso final de entrega continua (CD).
+\end{enumerate}
+
+%=============================================
+% SECCIÓN 3: MARCO TEÓRICO
+%=============================================
+\section{Marco Teórico}
+
+\subsection{Integración Continua (CI)}
+La Integración Continua es una práctica de desarrollo de software donde los desarrolladores fusionan sus cambios de código en un repositorio central de forma frecuente, preferiblemente varias veces al día. Cada integración es verificada mediante una compilación automatizada y pruebas, permitiendo detectar errores rápidamente.
+
+\subsection{Entrega Continua (CD)}
+La Entrega Continua es una extensión de la CI que garantiza que el código pueda ser desplegado a producción en cualquier momento. Mientras CI se enfoca en la automatización de pruebas, CD automatiza el proceso completo de lanzamiento.
+
+\subsection{GitHub Actions}
+GitHub Actions es una plataforma de automatización integrada en GitHub que permite crear flujos de trabajo (workflows) personalizados directamente en el repositorio. Características principales:
+\begin{itemize}[leftmargin=2cm]
+    \item \textbf{Workflows:} Procesos automatizados configurables mediante archivos YAML.
+    \item \textbf{Events:} Triggers que inician los workflows (push, pull\_request, etc.).
+    \item \textbf{Jobs:} Conjuntos de pasos que se ejecutan en el mismo runner.
+    \item \textbf{Actions:} Comandos reutilizables que se pueden compartir.
+\end{itemize}
+
+\subsection{Jest}
+Jest es un framework de pruebas de JavaScript desarrollado por Facebook, diseñado para garantizar la corrección del código. Características:
+\begin{itemize}[leftmargin=2cm]
+    \item Fácil configuración con zero-config para proyectos JavaScript.
+    \item Ejecución paralela de pruebas para mayor velocidad.
+    \item Mocking integrado y snapshots testing.
+    \item Cobertura de código incluida.
+\end{itemize}
+
+\subsection{ESLint}
+ESLint es una herramienta de análisis estático para identificar patrones problemáticos en código JavaScript. Permite:
+\begin{itemize}[leftmargin=2cm]
+    \item Detectar errores de sintaxis y lógica.
+    \item Asegurar consistencia en el estilo de código.
+    \item Aplicar mejores prácticas automáticamente.
+    \item Personalizar reglas según las necesidades del proyecto.
+\end{itemize}
+
+%=============================================
+% SECCIÓN 4: MATERIALES Y EQUIPOS
+%=============================================
+\section{Materiales y Equipos}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|p{4cm}|p{10cm}|}
+        \hline
+        \textbf{Categoría} & \textbf{Descripción} \\
+        \hline\hline
+        Sistema Operativo & Windows 10 o superior \\
+        \hline
+        Hardware & Procesador Intel Core i7-6700T o superior, 12GB RAM, 480GB SSD \\
+        \hline
+        Software & Node.js, Visual Studio Code, Git \\
+        \hline
+        Plataformas & GitHub, GitHub Actions \\
+        \hline
+        Dependencias & Express, Jest, ESLint \\
+        \hline
+        Conectividad & Acceso a Internet \\
+        \hline
+    \end{tabular}
+    \caption{Materiales y equipos utilizados en la práctica}
+\end{table}
+
+%=============================================
+% SECCIÓN 5: DESARROLLO DE LA PRÁCTICA
+%=============================================
+\section{Desarrollo de la Práctica}
+
+\subsection{Parte 1: Establecimiento de la Estructura del Proyecto Base}
+
+\subsubsection{Paso 1: Creación de la estructura básica}
+
+Se creó la estructura de carpetas del proyecto con los archivos necesarios para el desarrollo del laboratorio de CI/CD.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../images/1_estructura_carpetas.png}
+    \caption{Estructura de carpetas del proyecto en Visual Studio Code}
+    \label{fig:estructura}
+\end{figure}
+
+\subsubsection{Paso 2: Instalación de dependencias necesarias}
+
+\paragraph{a) Creación del archivo package.json}
+Se inicializó el proyecto con npm para generar el archivo de configuración:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/1_npm_init_y.png}
+    \caption{Ejecución del comando npm init -y para crear package.json}
+    \label{fig:npm-init}
+\end{figure}
+
+\paragraph{b) Instalación de Express}
+Se instaló el framework Express para crear el servidor:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/1_npm_install_express.png}
+    \caption{Instalación de Express con npm install express}
+    \label{fig:npm-express}
+\end{figure}
+
+\paragraph{c) Instalación de dependencias de desarrollo}
+Se configuraron Jest y ESLint como dependencias de desarrollo utilizando el comando \texttt{npm install --save-dev jest eslint}.
+
+\subsection{Parte 2: Creación de Archivos Base}
+
+\subsubsection{Paso 1: Crear archivo index.js}
+
+Se implementó un servidor Express con endpoints básicos:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/2_index.png}
+    \caption{Código fuente del servidor Express (index.js)}
+    \label{fig:index-code}
+\end{figure}
+
+\begin{lstlisting}[style=javascript, caption={Contenido del archivo index.js}]
+/**
+ * Servidor Express simple para el laboratorio de CI/CD
+ * Autor: Denise
+ * Fecha: Enero 2026
+ */
+import express from 'express';
+
+const app = express();
+const PORT = 3000;
+
+// Middleware para parsear JSON
+app.use(express.json());
+
+// Endpoint principal
+app.get('/', (req, res) => {
+  res.json({
+    mensaje: 'Bienvenido al laboratorio de CI/CD con GitHub Actions',
+    autor: 'Denise',
+    fecha: new Date().toISOString()
+  });
+});
+
+// Endpoint de salud
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: Date.now() });
+});
+
+// Levantar el servidor
+app.listen(PORT, () => {
+  console.log(`Servidor en http://localhost:${PORT}`);
+});
+
+export default app;
+\end{lstlisting}
+
+\subsubsection{Paso 2: Crear archivo sum.js}
+
+Se implementó una función simple de suma para las pruebas unitarias:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../images/2_sum.png}
+    \caption{Código fuente de la función de suma (sum.js)}
+    \label{fig:sum-code}
+\end{figure}
+
+\begin{lstlisting}[style=javascript, caption={Contenido del archivo sum.js}]
+/**
+ * Funcion para sumar dos numeros
+ * @param {number} a - Primer numero
+ * @param {number} b - Segundo numero
+ * @returns {number} La suma de a y b
+ */
+export function sum(a, b) {
+  return a + b;
+}
+\end{lstlisting}
+
+\subsubsection{Paso 3: Crear archivo sum.test.js}
+
+Se crearon las pruebas unitarias para la función de suma:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/2_sum_test.png}
+    \caption{Código fuente de las pruebas unitarias (sum.test.js)}
+    \label{fig:sum-test-code}
+\end{figure}
+
+\begin{lstlisting}[style=javascript, caption={Contenido del archivo sum.test.js}]
+/**
+ * Pruebas unitarias para la funcion sum
+ */
+import { sum } from './sum.js';
+
+describe('Funcion sum()', () => {
+  test('suma 1 + 2 es igual a 3', () => {
+    expect(sum(1, 2)).toBe(3);
+  });
+
+  test('suma numeros negativos: -1 + -1 es igual a -2', () => {
+    expect(sum(-1, -1)).toBe(-2);
+  });
+
+  test('suma con cero: 5 + 0 es igual a 5', () => {
+    expect(sum(5, 0)).toBe(5);
+  });
+
+  test('suma numeros decimales: 0.1 + 0.2', () => {
+    expect(sum(0.1, 0.2)).toBeCloseTo(0.3);
+  });
+});
+\end{lstlisting}
+
+\subsubsection{Paso 4: Configurar package.json}
+
+Se agregaron los scripts necesarios para ejecutar el servidor, las pruebas y el linter:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/2_package.png}
+    \caption{Configuración del archivo package.json con scripts}
+    \label{fig:package-json}
+\end{figure}
+
+\begin{lstlisting}[style=json, caption={Contenido del archivo package.json}]
+{
+  "name": "laboratorio-ci-cd",
+  "version": "1.0.0",
+  "description": "Laboratorio de CI/CD usando GitHub Actions",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint ."
+  },
+  "author": "Denise",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.22.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {}
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Paso 5: Crear el archivo ESLint}
+
+Se configuró ESLint con reglas básicas para asegurar la calidad del código:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/2_eslint.png}
+    \caption{Configuración de ESLint (.eslintrc.json)}
+    \label{fig:eslint-config}
+\end{figure}
+
+\begin{lstlisting}[style=json, caption={Contenido del archivo .eslintrc.json}]
+{
+  "env": {
+    "node": true,
+    "es2021": true,
+    "jest": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "indent": ["error", 2],
+    "linebreak-style": "off",
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "eqeqeq": ["error", "always"],
+    "curly": ["error", "all"],
+    "brace-style": ["error", "1tbs"],
+    "comma-dangle": ["error", "never"],
+    "no-trailing-spaces": "error"
+  }
+}
+\end{lstlisting}
+
+\subsection{Parte 3: Configuración de Git y GitHub Actions}
+
+\subsubsection{Paso 1: Crear repositorio en GitHub}
+
+Se creó un nuevo repositorio vacío en GitHub para alojar el proyecto.
+
+\subsubsection{Paso 2: Ejecución de comandos Git}
+
+Se ejecutaron los comandos necesarios para inicializar el repositorio local y conectarlo con GitHub:
+
+\begin{lstlisting}[style=codigo, caption={Comandos Git para inicializar y subir el proyecto}]
+git init
+git add .
+git commit -m "Proyecto base con CI"
+git branch -M main
+git remote add origin https://github.com/DeniseRea/Testing-CICD.git
+git push -u origin main
+\end{lstlisting}
+
+\subsubsection{Paso 3: Crear el workflow de GitHub Actions}
+
+Se creó el archivo \texttt{.github/workflows/ci.yml} con la configuración del pipeline de CI:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/3_codigo_workflow.png}
+    \caption{Código fuente del workflow de GitHub Actions (ci.yml)}
+    \label{fig:workflow-code}
+\end{figure}
+
+\begin{lstlisting}[style=yaml, caption={Contenido del archivo ci.yml}]
+name: CI - Integracion Continua
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Pruebas y Analisis de Codigo
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Analisis estatico con ESLint
+        run: npm run lint
+
+      - name: Ejecutar pruebas unitarias
+        run: npm test
+
+      - name: Simulacion de despliegue
+        run: |
+          echo "Todas las pruebas pasaron exitosamente"
+          echo "Codigo validado por ESLint"
+          echo "Listo para despliegue"
+\end{lstlisting}
+
+\subsubsection{Paso 4: Probar la CI}
+
+Se realizó un push al repositorio para verificar que el workflow se ejecutara correctamente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/segundowokflow-corriendo.png}
+    \caption{Vista de los workflows en ejecución en GitHub Actions}
+    \label{fig:workflow-success}
+\end{figure}
+
+%=============================================
+% SECCIÓN 6: ACTIVIDADES ADICIONALES
+%=============================================
+\section{Sección de Preguntas/Actividades}
+
+\subsection{Actividad 1: Agregar más pruebas unitarias}
+
+Se implementaron dos funciones matemáticas adicionales (factorial y fibonacci) con sus correspondientes pruebas unitarias.
+
+\subsubsection{Archivo math.js}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/math_test.png}
+    \caption{Funciones matemáticas adicionales (math.js y math.test.js)}
+    \label{fig:math-code}
+\end{figure}
+
+\begin{lstlisting}[style=javascript, caption={Contenido del archivo math.js}]
+/**
+ * Funciones matematicas adicionales
+ * Autor: Denise
+ */
+
+/**
+ * Calcula el factorial de un numero
+ */
+export function factorial(n) {
+  if (n < 0) {
+    throw new Error('El factorial no esta definido para numeros negativos');
+  }
+  if (n === 0 || n === 1) {
+    return 1;
+  }
+  let resultado = 1;
+  for (let i = 2; i <= n; i++) {
+    resultado *= i;
+  }
+  return resultado;
+}
+
+/**
+ * Calcula el numero de Fibonacci en la posicion n
+ */
+export function fibonacci(n) {
+  if (n < 0) {
+    throw new Error('La posicion debe ser un numero no negativo');
+  }
+  if (n === 0) return 0;
+  if (n === 1) return 1;
+  
+  let prev = 0;
+  let curr = 1;
+  for (let i = 2; i <= n; i++) {
+    const temp = curr;
+    curr = prev + curr;
+    prev = temp;
+  }
+  return curr;
+}
+\end{lstlisting}
+
+\subsubsection{Archivo math.test.js}
+
+\begin{lstlisting}[style=javascript, caption={Pruebas unitarias para math.js}]
+import { factorial, fibonacci } from './math.js';
+
+describe('Funcion factorial()', () => {
+  test('factorial de 0 es 1', () => {
+    expect(factorial(0)).toBe(1);
+  });
+  test('factorial de 5 es 120', () => {
+    expect(factorial(5)).toBe(120);
+  });
+  test('factorial de 10 es 3628800', () => {
+    expect(factorial(10)).toBe(3628800);
+  });
+  test('factorial de numero negativo lanza error', () => {
+    expect(() => factorial(-1)).toThrow();
+  });
+});
+
+describe('Funcion fibonacci()', () => {
+  test('fibonacci(0) es 0', () => {
+    expect(fibonacci(0)).toBe(0);
+  });
+  test('fibonacci(10) es 55', () => {
+    expect(fibonacci(10)).toBe(55);
+  });
+  test('fibonacci de numero negativo lanza error', () => {
+    expect(() => fibonacci(-1)).toThrow();
+  });
+});
+\end{lstlisting}
+
+\subsection{Actividad 2: Provocar un error intencional y corregirlo}
+
+\subsubsection{Error intencional}
+
+Se modificó una prueba para que fallara intencionalmente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/falla_intencional.png}
+    \caption{Resumen del workflow fallido mostrando el commit "ADD: provocar error" con estado Failure}
+    \label{fig:error-code}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/falla_intencional_2.png}
+    \caption{Log detallado mostrando el fallo en las pruebas unitarias: Expected -2, Received 0}
+    \label{fig:error-detail}
+\end{figure}
+
+\subsubsection{Corrección del error}
+
+Se corrigió el error y se volvió a subir el código. El workflow se ejecutó exitosamente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/corrigiendo_error_intencional.png}
+    \caption{Workflow exitoso después de la corrección: commit "FIX: corrigiendo error intencional" con todos los pasos completados}
+    \label{fig:error-fix}
+\end{figure}
+
+%=============================================
+% SECCIÓN: ERRORES ENCONTRADOS
+%=============================================
+\subsection{Errores Encontrados Durante el Laboratorio}
+
+Durante el desarrollo del laboratorio se presentó un error de configuración que impidió la ejecución exitosa del workflow en GitHub Actions.
+
+\subsubsection{Problema: Configuración no multiplataforma}
+
+El error principal fue una mala configuración de los archivos del workflow, específicamente en la regla \texttt{linebreak-style} de ESLint. El archivo \texttt{.eslintrc.json} originalmente tenía la siguiente configuración:
+
+\begin{lstlisting}[style=json, caption={Configuración original con error de linebreak-style}]
+"linebreak-style": ["error", "unix"]
+\end{lstlisting}
+
+Esta configuración causaba que el workflow fallara porque:
+\begin{itemize}[leftmargin=2cm]
+    \item En Windows, los saltos de línea usan CRLF (\texttt{\textbackslash r\textbackslash n}).
+    \item En Linux (runner de GitHub Actions), los saltos de línea usan LF (\texttt{\textbackslash n}).
+    \item La regla \texttt{"unix"} exigía solo LF, generando errores en desarrollo local.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/3_workflow.png}
+    \caption{Historial de workflows mostrando los intentos de corrección: Fix linebreak-style, Fix remover cache de npm, y Fix ajustar workflow}
+    \label{fig:workflow-history}
+\end{figure}
+
+\subsubsection{Solución aplicada}
+
+Se modificó la configuración de ESLint para desactivar la verificación de estilo de salto de línea:
+
+\begin{lstlisting}[style=json, caption={Configuración corregida para compatibilidad multiplataforma}]
+"linebreak-style": "off"
+\end{lstlisting}
+
+Esta solución permite que el código funcione tanto en Windows como en Linux sin errores de linting, garantizando la compatibilidad multiplataforma del proyecto.
+
+%=============================================
+% SECCIÓN 7: RESULTADOS OBTENIDOS
+%=============================================
+\section{Resultados Obtenidos}
+
+\subsection{Resumen de Pruebas Ejecutadas}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|l|c|c|c|}
+        \hline
+        \textbf{Archivo de Pruebas} & \textbf{Tests} & \textbf{Pasaron} & \textbf{Estado} \\
+        \hline\hline
+        sum.test.js & 4 & 4 & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        math.test.js & 12 & 12 & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        \textbf{Total} & \textbf{16} & \textbf{16} & \textcolor{successGreen}{\textbf{100\%}} \\
+        \hline
+    \end{tabular}
+    \caption{Resumen de pruebas unitarias ejecutadas}
+\end{table}
+
+\subsection{Funcionalidades del Pipeline CI}
+
+\begin{resultbox}[Pipeline de CI Implementado]
+\begin{itemize}
+    \item \textbf{Trigger automático:} Se activa con cada push y pull request a main.
+    \item \textbf{Análisis estático:} ESLint verifica el código antes de las pruebas.
+    \item \textbf{Pruebas unitarias:} Jest ejecuta todas las pruebas del proyecto.
+    \item \textbf{Simulación de despliegue:} Confirmación visual del éxito del pipeline.
+    \item \textbf{Notificaciones:} GitHub muestra el estado del workflow en cada commit.
+\end{itemize}
+\end{resultbox}
+
+\subsection{Verificación del Error Intencional}
+
+Se comprobó que el sistema de CI detecta correctamente los errores:
+\begin{enumerate}[leftmargin=2cm]
+    \item Se modificó el test \texttt{sum(1, 2)} para esperar un valor incorrecto.
+    \item El workflow falló y marcó el commit con una X roja.
+    \item Al corregir el error, el workflow pasó exitosamente.
+    \item El commit se marcó con un check verde.
+\end{enumerate}
+
+%=============================================
+% SECCIÓN 8: ANÁLISIS DE RESULTADOS
+%=============================================
+\section{Análisis de Resultados}
+
+\subsection{Beneficios de la Integración Continua}
+
+La implementación de CI/CD con GitHub Actions demostró varios beneficios:
+
+\begin{enumerate}[leftmargin=2cm]
+    \item \textbf{Detección temprana de errores:} Los errores se identifican inmediatamente después del push, antes de que afecten a otros desarrolladores o lleguen a producción.
+    
+    \item \textbf{Automatización del proceso:} No es necesario ejecutar manualmente las pruebas ni el linter; todo se ejecuta automáticamente.
+    
+    \item \textbf{Documentación del proceso:} Los logs del workflow sirven como registro de lo que ocurrió en cada ejecución.
+    
+    \item \textbf{Confianza en el código:} Cada commit que pasa el pipeline tiene garantía de calidad básica.
+\end{enumerate}
+
+\subsection{Comparación de Escenarios}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Escenario} & \textbf{Sin CI} & \textbf{Con CI} \\
+        \hline\hline
+        Detección de errores & Manual & Automática \\
+        \hline
+        Tiempo de feedback & Horas/Días & Minutos \\
+        \hline
+        Consistencia & Variable & Garantizada \\
+        \hline
+        Documentación & Manual & Automática \\
+        \hline
+        Esfuerzo repetitivo & Alto & Nulo \\
+        \hline
+    \end{tabular}
+    \caption{Comparación de desarrollo con y sin CI}
+\end{table}
+
+%=============================================
+% SECCIÓN 9: CONCLUSIONES
+%=============================================
+\section{Conclusiones}
+
+La práctica permitió implementar un pipeline de CI funcional con GitHub Actions que ejecuta automáticamente ESLint y Jest en cada push. Se comprobó que el sistema detecta errores correctamente, ya que al introducir un fallo intencional, el workflow lo identificó y marcó como fallido.
+
+Un aprendizaje importante fue la necesidad de configurar el proyecto para compatibilidad multiplataforma, desactivando la regla \texttt{linebreak-style} en ESLint para evitar conflictos entre Windows (desarrollo local) y Linux (runner de GitHub Actions).
+
+%=============================================
+% SECCIÓN 10: RECOMENDACIONES
+%=============================================
+\section{Recomendaciones}
+
+Se recomienda agregar reportes de cobertura con \texttt{npm test --coverage} e integrar servicios como Codecov. También es útil configurar protección de ramas en GitHub y usar caché para dependencias npm en el workflow para reducir tiempos de ejecución.
+
+%=============================================
+% SECCIÓN 11: REFERENCIAS
+%=============================================
+\section{Referencias Bibliográficas}
+
+\begin{enumerate}[leftmargin=1cm]
+    \item GitHub. (2024). \textit{GitHub Actions Documentation}. Recuperado de: \url{https://docs.github.com/en/actions}
+    
+    \item Jest. (2024). \textit{Jest - Delightful JavaScript Testing}. Recuperado de: \url{https://jestjs.io/docs/getting-started}
+    
+    \item ESLint. (2024). \textit{ESLint - Pluggable JavaScript Linter}. Recuperado de: \url{https://eslint.org/docs/latest/}
+    
+    \item Express.js. (2024). \textit{Express - Node.js web application framework}. Recuperado de: \url{https://expressjs.com/}
+    
+    \item Node.js. (2024). \textit{Node.js Documentation}. Recuperado de: \url{https://nodejs.org/docs/}
+    
+    \item Fowler, M. (2006). \textit{Continuous Integration}. Recuperado de: \url{https://martinfowler.com/articles/continuousIntegration.html}
+\end{enumerate}
+
+%=============================================
+% SECCIÓN 12: ANEXOS - CÓDIGO FUENTE
+%=============================================
+\section{Anexos: Código Fuente Completo}
+
+\subsection{Repositorio GitHub}
+El código fuente completo del proyecto está disponible en:\\
+\url{https://github.com/DeniseRea/Testing-CICD}
+
+\end{document}
