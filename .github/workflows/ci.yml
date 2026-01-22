@@ -25,29 +25,29 @@ jobs:
 
     steps:
       # Step 1: Checkout del código fuente
-      - name: 📥 Checkout del repositorio
+      - name: Checkout del repositorio
         uses: actions/checkout@v4
 
       # Step 2: Configurar Node.js
-      - name: 🔧 Configurar Node.js ${{ matrix.node-version }}
+      - name: Configurar Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
       # Step 3: Instalar dependencias
-      - name: 📦 Instalar dependencias
+      - name: Instalar dependencias
         run: npm install
 
       # Step 4: Ejecutar ESLint
-      - name: 🔍 Análisis estático con ESLint
+      - name: Análisis estático con ESLint
         run: npm run lint
 
       # Step 5: Ejecutar pruebas con Jest
-      - name: 🧪 Ejecutar pruebas unitarias
+      - name: Ejecutar pruebas unitarias
         run: npm test
 
       # Step 6: Simulación de despliegue
-      - name: 🚀 Simulación de despliegue
+      - name: Simulación de despliegue
         run: |
           echo "✓ Todas las pruebas pasaron exitosamente"
           echo "✓ Código validado por ESLint"

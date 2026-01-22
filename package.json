@@ -9,11 +9,17 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "lint": "eslint ."
   },
-  "keywords": ["ci", "cd", "github-actions", "jest", "eslint"],
+  "keywords": [
+    "ci",
+    "cd",
+    "github-actions",
+    "jest",
+    "eslint"
+  ],
   "author": "Denise",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.22.1"
   },
   "devDependencies": {
     "eslint": "^8.50.0",
@@ -22,5 +28,13 @@
   "jest": {
     "testEnvironment": "node",
     "transform": {}
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DeniseRea/Testing-CICD.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DeniseRea/Testing-CICD/issues"
+  },
+  "homepage": "https://github.com/DeniseRea/Testing-CICD#readme"
 }
