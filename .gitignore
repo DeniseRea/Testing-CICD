@@ -1,6 +1,8 @@
 # Dependencias
 node_modules/
 package-lock.json
+/.pnp
+.pnp.js
 
 # Archivos de logs
 logs
@@ -28,6 +30,7 @@ coverage/
 dist/
 build/
 out/
+/.next/
 
 # Archivos de entorno
 .env
@@ -35,11 +38,13 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+.env*.local
 
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
 desktop.ini
+*.pem
 
 # Archivos de IDE
 .vscode/
@@ -60,3 +65,11 @@ desktop.ini
 
 # Archivos de Jest
 jest-coverage/
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+>>>>>>> e9926dbaff7032782fac157a82b3f54b1519f949
